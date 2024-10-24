@@ -2,25 +2,29 @@
 namespace PH7\ApiSimpleMenu;
 
 
-use PH7\ApiSimpleMenu\Exception\InvalidValidationException;
+use PH7\ApiSimpleMenu\Validation\Exception\InvalidValidationException;
+use PH7\ApiSimpleMenu\Validation\UserValidation;
 use Respect\Validation\Validator as v;
+
 
 class User
 {
-    public readonly int $userid;
+    public readonly ?string $userid;
 
-    public function __construct(public readonly string $name, public readonly string $email, public readonly string $phoneNumber)
-    {
+    public function __construct(
+        public readonly string $name,
+        public readonly string $email,
+        public readonly string $phoneNumber
+    ) {
 
     }
 
     public function create(mixed $data): object
     {
 
-        // validation schema
-        $schemaValidation = v::attribute('first', v::stringType()->length(3, 60))->attribute('last', v::stringType()->length(3, 60))->attribute('email', v::email(), mandatory: false)->attribute('phone', v::phone(), mandatory: false);
+        $userValidation = new UserValidation($data);
 
-        if ($schemaValidation->validate($data)) {
+        if ($userValidation->isCreationSchemaValid()) {
             return $data;
 
         }
@@ -35,23 +39,41 @@ class User
         return [];
     }
 
-    public function retrieve(int $userid): self
+    public function retrieve(string $userid): self
     {
-        $this->userid = $userid;
-        return $this;
+        if (v::uuid()->validate($userid)) {
+            $this->userid = $userid;
+            return $this;
+        }
+
+
+        throw new InvalidValidationException("Invalid user UUID");
     }
 
-    public function update(mixed $data): self
+    public function update(mixed $data): object
     {
         // TODO Update `$postBody` to the DAL later on (for updating the database)
-        return $this;
+        $userValidation = new UserValidation($data);
+
+
+        if ($userValidation->isUpdateSchemaValid()) {
+            return $data;
+        }
+
+        throw new InvalidValidationException('Invalid Data');
 
     }
 
     public function remove(string $userid): bool
     {
-        // TODO lookup the DB user row with this userid
-        return true;
+        if (v::uuid()->validate($userid)) {
+            $this->userid = $userid;
+            return true;
+        }
+        throw new InvalidValidationException("Invalid user UUID");
+
+
+
     }
 
 

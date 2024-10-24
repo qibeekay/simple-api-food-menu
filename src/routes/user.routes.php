@@ -5,7 +5,7 @@ namespace PH7\ApiSimpleMenu;
 
 use Exception;
 
-use PH7\ApiSimpleMenu\Exception\InvalidValidationException;
+use PH7\ApiSimpleMenu\Validation\Exception\InvalidValidationException;
 use PH7\JustHttp\StatusCode;
 use PH7\PhpHttpResponseHeader\Http;
 
@@ -25,11 +25,12 @@ enum UserAction: string
     // This method returns a JSON response based on the action being performed.
     public function getResponse(): string
     {
-        // The null coalescing operator (??) is used here. It assigns 0 if 'user_ud' is not present in the GET request.
-        $userid = !empty($_GET['user_id']) ? (int) $_GET['user_id'] : 0;
 
         $postBody = file_get_contents('php://input');
         $postBody = json_decode($postBody);
+
+        // The null coalescing operator (??) is used here. It assigns 0 if 'user_ud' is not present in the GET request.
+        $userid = $_GET['user_id'] ?? null;
 
         // Creating a new User object with the given parameters.
         $user = new User('Evans', 'evanskyrie5@gmail.com', '09073216155');
