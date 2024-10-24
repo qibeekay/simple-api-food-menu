@@ -1,0 +1,26 @@
+{
+    "name": "hp/api-simple-menu",
+    "description": "a simple RESTful API for a udemy course",
+    "autoload": {
+        "psr-4": {
+            "PH7\\ApiSimpleMenu\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Anugo Mokwe",
+            "email": "mokwechibuike7@gmail.com"
+        }
+    ],
+
+    "config": {
+        "platform": {
+            "php": "8.1.0"
+        }
+    },
+    "require": {
+        "php": ">=8.1.0",
+        "firebase/php-jwt": "^6.10",
+        "respect/validation": "^2.3"
+    }
+}
